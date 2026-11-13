@@ -3,10 +3,11 @@ import React, {
   useState,
   useContext,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 
-type ScreenState = "loading" | "title" | "scene";
+type ScreenState = "title" | "scene";
 
 interface AnimationContextType {
   currentScreen: ScreenState;
@@ -14,8 +15,6 @@ interface AnimationContextType {
   sceneOpacity: number;
   sceneBlur: number;
   setCurrentScreen: (screen: ScreenState) => void;
-  setAssetsReady: (ready: boolean) => void;
-  handleLoadingComplete: () => void;
   handleTitleFading: () => void;
   handleTitleComplete: () => void;
   handleAssetsLoaded: () => void;
@@ -28,7 +27,7 @@ const AnimationContext = createContext<AnimationContextType | undefined>(
 export const AnimationProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [currentScreen, setCurrentScreen] = useState<ScreenState>("loading");
+  const [currentScreen, setCurrentScreen] = useState<ScreenState>("title");
   const [assetsReady, setAssetsReady] = useState(false);
   const [sceneOpacity, setSceneOpacity] = useState(0);
   const [sceneBlur, setSceneBlur] = useState(8);
@@ -40,27 +39,20 @@ export const AnimationProvider: React.FC<{ children: ReactNode }> = ({
     } else if (currentScreen === "scene") {
       setSceneOpacity(1);
       setSceneBlur(0);
-    } else {
-      setSceneOpacity(0);
-      setSceneBlur(8);
     }
   }, [currentScreen]);
 
-  const handleLoadingComplete = () => {
-    setCurrentScreen("title");
-  };
-
-  const handleTitleFading = () => {
+  const handleTitleFading = useCallback(() => {
     setSceneBlur(0);
-  };
+  }, []);
 
-  const handleTitleComplete = () => {
+  const handleTitleComplete = useCallback(() => {
     setCurrentScreen("scene");
-  };
+  }, []);
 
-  const handleAssetsLoaded = () => {
+  const handleAssetsLoaded = useCallback(() => {
     setAssetsReady(true);
-  };
+  }, []);
 
   return (
     <AnimationContext.Provider
@@ -70,8 +62,6 @@ export const AnimationProvider: React.FC<{ children: ReactNode }> = ({
         sceneOpacity,
         sceneBlur,
         setCurrentScreen,
-        setAssetsReady,
-        handleLoadingComplete,
         handleTitleFading,
         handleTitleComplete,
         handleAssetsLoaded,

@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 
 interface TitleScreenProps {
+  assetsReady: boolean;
   onFading?: () => void;
   onComplete?: () => void;
 }
 
-const TitleScreen: React.FC<TitleScreenProps> = ({ onFading, onComplete }) => {
+const TitleScreen: React.FC<TitleScreenProps> = ({
+  assetsReady,
+  onFading,
+  onComplete,
+}) => {
   const [animationState, setAnimationState] = useState<
     "initial" | "visible" | "fading"
   >("initial");
@@ -14,6 +19,11 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onFading, onComplete }) => {
     const appearTimer = setTimeout(() => {
       setAnimationState("visible");
     }, 300);
+
+  }, []);
+
+  useEffect(() => {
+    if (!assetsReady) return;
 
     const fadeOutTimer = setTimeout(() => {
       setAnimationState("fading");
@@ -25,11 +35,10 @@ const TitleScreen: React.FC<TitleScreenProps> = ({ onFading, onComplete }) => {
     }, 4500);
 
     return () => {
-      clearTimeout(appearTimer);
       clearTimeout(fadeOutTimer);
       clearTimeout(completeTimer);
     };
-  }, []);
+  }, [assetsReady, onFading, onComplete]);
 
   return (
     <div

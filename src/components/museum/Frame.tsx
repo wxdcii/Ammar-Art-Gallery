@@ -21,7 +21,6 @@ const Frame = forwardRef<THREE.Mesh, FrameProps>(
     ref
   ) => {
     const [hovered, setHovered] = useState(false);
-    const [linkHovered, setLinkHovered] = useState(false);
 
     const [error, setError] = useState(false);
     const internalRef = useRef<THREE.Mesh>(null);
@@ -30,7 +29,6 @@ const Frame = forwardRef<THREE.Mesh, FrameProps>(
     const isZoomed = zoomedFrameId === index;
 
     useCursor(hovered);
-    useCursor(linkHovered);
 
     const texture = useTexture(image.url);
 
@@ -181,28 +179,6 @@ const Frame = forwardRef<THREE.Mesh, FrameProps>(
           </group>
         )}
 
-        {isZoomed && (
-          <mesh
-            position={[0, -height / 2 - 0.2, -0.04]}
-            onClick={() => {
-              window.open(image.link, "_blank", "noopener, noreferrer");
-            }}
-            onPointerOver={() => setLinkHovered(true)}
-            onPointerOut={() => setLinkHovered(false)}
-          >
-            <group position={[0, 0, 0.06]}>
-              <Text
-                fontSize={0.08}
-                color={linkHovered ? "#fff" : "#aaa"}
-                font="/fonts/Inter_28pt-SemiBold.ttf"
-              >
-                Open in instagram →
-              </Text>
-            </group>
-            <boxGeometry args={[1, 0.2, 0.1]} />
-            <meshBasicMaterial transparent opacity={0} />
-          </mesh>
-        )}
       </group>
     );
   }
